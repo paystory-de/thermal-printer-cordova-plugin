@@ -150,7 +150,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 }}));
                 return;
             }
-            BluetoothPrintersConnections printerConnections = new BluetoothPrintersConnections();
+            BluetoothConnections printerConnections = new BluetoothConnections();
             for (BluetoothConnection bluetoothConnection : printerConnections.getList()) {
                 BluetoothDevice bluetoothDevice = bluetoothConnection.getDevice();
                 JSONObject printerObj = new JSONObject();
@@ -159,6 +159,8 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 try { printerObj.put("name", bluetoothDevice.getName()); } catch (Exception ignored) {}
                 try { printerObj.put("type", bluetoothDevice.getType()); } catch (Exception ignored) {}
                 try { printerObj.put("features", bluetoothDevice.getUuids()); } catch (Exception ignored) {}
+                try { printerObj.put("deviceClass", bluetoothDevice.getBluetoothClass().getDeviceClass()); } catch (Exception ignored) {}
+                try { printerObj.put("majorDeviceClass", bluetoothDevice.getBluetoothClass().getMajorDeviceClass()); } catch (Exception ignored) {}
                 printers.put(printerObj);
             }
         } else {
@@ -239,7 +241,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
             if (id.equals("first")) {
                 return BluetoothPrintersConnections.selectFirstPaired();
             }
-            BluetoothPrintersConnections printerConnections = new BluetoothPrintersConnections();
+            BluetoothConnections printerConnections = new BluetoothConnections();
             for (BluetoothConnection bluetoothConnection : printerConnections.getList()) {
                 BluetoothDevice bluetoothDevice = bluetoothConnection.getDevice();
                 try { if (bluetoothDevice.getAddress().equals(id)) { return bluetoothConnection; } } catch (Exception ignored) {}
