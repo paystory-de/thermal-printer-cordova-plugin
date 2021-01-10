@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="thermal-printer-cordova-plugin" version="1.0.0">
+    <name>Cordova Plugin ESCPOS Printer</name>
+    <description>Cordova wrapper for ESC/POS Thermal Printer library</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,android,thermal,printer,esc,pos,esc/pos</keywords>
+    <js-module src="www/thermal-printer.js" name="ThermalPrinterPlugin">
+        <clobbers target="ThermalPrinter" />
+    </js-module>
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="ThermalPrinter">
+                <param name="android-package" value="de.paystory.thermal_printer.ThermalPrinterCordovaPlugin" />
+            </feature>
+        </config-file>
+
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <uses-feature android:name="android.hardware.usb.host" />
+            <uses-permission android:name="android.permission.BLUETOOTH" />
+            <uses-permission android:name="android.permission.INTERNET" />
+        </config-file>
+
+        <source-file src="src/android/ThermalPrinterCordovaPlugin.java" target-dir="src/de/paystory/thermal_printer" />
+        <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
+    </platform>
+</plugin>
