@@ -1,9 +1,3 @@
-declare module '@capacitor/core' {
-  interface PluginRegistry {
-    ThermalPrinter: ThermalPrinter;
-  }
-}
-
 export interface ThermalPrinter {
   /**
    * List available printers
