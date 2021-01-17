@@ -17,6 +17,7 @@ import com.dantsu.escposprinter.EscPosCharsetEncoding;
 import com.dantsu.escposprinter.EscPosPrinter;
 import com.dantsu.escposprinter.connection.DeviceConnection;
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection;
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnections;
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections;
 import com.dantsu.escposprinter.connection.tcp.TcpConnection;
 import com.dantsu.escposprinter.connection.usb.UsbConnection;
@@ -33,6 +34,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
     @Override
@@ -68,23 +70,21 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
     private void bitmapToHexadecimalString(CallbackContext callbackContext, JSONObject data) throws JSONException {
         String encodedString = data.getString("base64");
         byte[] decodedString = Base64.decode(encodedString.contains(",")
-                ? encodedString.substring(encodedString.indexOf(",")  + 1) : encodedString, Base64.DEFAULT);
+            ? encodedString.substring(encodedString.indexOf(",") + 1) : encodedString, Base64.DEFAULT);
         data.put("bytes", decodedString);
         this.bytesToHexadecimalString(callbackContext, data);
     }
 
     private void bytesToHexadecimalString(CallbackContext callbackContext, JSONObject data) throws JSONException {
         EscPosPrinter printer = this.getPrinter(callbackContext, data);
-        if (printer != null) {
-            try {
-                byte[] bytes = (byte[]) data.get("bytes");
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                callbackContext.success(PrinterTextParserImg.bitmapToHexadecimalString(printer, decodedByte));
-            } catch (Exception e) {
-                callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
-                    put("error", e.getMessage());
-                }}));
-            }
+        try {
+            byte[] bytes = (byte[]) data.get("bytes");
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            callbackContext.success(PrinterTextParserImg.bitmapToHexadecimalString(printer, decodedByte));
+        } catch (Exception e) {
+            callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                put("error", e.getMessage());
+            }}));
         }
     }
 
@@ -94,10 +94,10 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
             String intentName = "thermalPrinterUSBRequest" + ((UsbConnection) connection).getDevice().getDeviceId();
 
             PendingIntent permissionIntent = PendingIntent.getBroadcast(
-                    cordova.getActivity().getBaseContext(),
-                    0,
-                    new Intent(intentName),
-                    0
+                cordova.getActivity().getBaseContext(),
+                0,
+                new Intent(intentName),
+                0
             );
 
             ArrayList<BroadcastReceiver> broadcastReceiverArrayList = new ArrayList<>();
@@ -105,7 +105,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     String action = intent.getAction();
-                    if (action.equals(intentName)) {
+                    if (action != null && action.equals(intentName)) {
                         for (BroadcastReceiver br : broadcastReceiverArrayList) {
                             if (br != null) {
                                 cordova.getActivity().unregisterReceiver(br);
@@ -135,7 +135,9 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
             broadcastReceiverArrayList.add(broadcastReceiver);
 
             UsbManager usbManager = (UsbManager) this.cordova.getActivity().getSystemService(Context.USB_SERVICE);
-            usbManager.requestPermission(((UsbConnection) connection).getDevice(), permissionIntent);
+            if (usbManager != null) {
+                usbManager.requestPermission(((UsbConnection) connection).getDevice(), permissionIntent);
+            }
         }
     }
 
@@ -168,7 +170,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
             for (UsbConnection usbConnection : printerConnections.getList()) {
                 UsbDevice usbDevice = usbConnection.getDevice();
                 JSONObject printerObj = new JSONObject();
-                try { printerObj.put("productName", usbDevice.getProductName()); } catch (Exception ignored) {}
+                try { printerObj.put("productName", Objects.requireNonNull(usbDevice.getProductName()).trim()); } catch (Exception ignored) {}
                 try { printerObj.put("manufacturerName", usbDevice.getManufacturerName()); } catch (Exception ignored) {}
                 try { printerObj.put("deviceId", usbDevice.getDeviceId()); } catch (Exception ignored) {}
                 try { printerObj.put("serialNumber", usbDevice.getSerialNumber()); } catch (Exception ignored) {}
@@ -182,51 +184,45 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
 
     private void printFormattedText(CallbackContext callbackContext, String action, JSONObject data) throws JSONException {
         EscPosPrinter printer = this.getPrinter(callbackContext, data);
-        if (printer != null) {
-            try {
-                int dotsFeedPaper = data.has("mmFeedPaper")
-                        ? printer.mmToPx((float) data.getDouble("mmFeedPaper"))
-                        : data.optInt("dotsFeedPaper", 20);
-                if (action.endsWith("Cut")) {
-                    printer.printFormattedTextAndCut(data.getString("text"), dotsFeedPaper);
-                } else {
-                    printer.printFormattedText(data.getString("text"), dotsFeedPaper);
-                }
-                callbackContext.success();
-            } catch (EscPosConnectionException e) {
-                callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
-                    put("error", e.getMessage());
-                }}));
-            } catch (Exception e) {
-                callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
-                    put("error", e.getMessage());
-                }}));
+        try {
+            int dotsFeedPaper = data.has("mmFeedPaper")
+                ? printer.mmToPx((float) data.getDouble("mmFeedPaper"))
+                : data.optInt("dotsFeedPaper", 20);
+            if (action.endsWith("Cut")) {
+                printer.printFormattedTextAndCut(data.getString("text"), dotsFeedPaper);
+            } else {
+                printer.printFormattedText(data.getString("text"), dotsFeedPaper);
             }
+            callbackContext.success();
+        } catch (EscPosConnectionException e) {
+            callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                put("error", e.getMessage());
+            }}));
+        } catch (Exception e) {
+            callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                put("error", e.getMessage());
+            }}));
         }
     }
 
     private void getEncoding(CallbackContext callbackContext, JSONObject data) throws JSONException {
         EscPosPrinter printer = this.getPrinter(callbackContext, data);
-        if (printer != null) {
-            callbackContext.success(new JSONObject(new HashMap<String, Object>() {{
-                EscPosCharsetEncoding encoding = printer.getEncoding();
-                if (encoding != null) {
-                    callbackContext.success(new JSONObject(new HashMap<String, Object>() {{
-                        put("name", encoding.getName());
-                        put("command", encoding.getCommand());
-                    }}));
-                } else {
-                    callbackContext.success("null");
-                }
-            }}));
-        }
+        callbackContext.success(new JSONObject(new HashMap<String, Object>() {{
+            EscPosCharsetEncoding encoding = printer.getEncoding();
+            if (encoding != null) {
+                callbackContext.success(new JSONObject(new HashMap<String, Object>() {{
+                    put("name", encoding.getName());
+                    put("command", encoding.getCommand());
+                }}));
+            } else {
+                callbackContext.success("null");
+            }
+        }}));
     }
 
     private void disconnectPrinter(CallbackContext callbackContext, JSONObject data) throws JSONException {
         EscPosPrinter printer = this.getPrinter(callbackContext, data);
-        if (printer != null) {
-            printer.disconnectPrinter();
-        }
+        printer.disconnectPrinter();
         callbackContext.success();
     }
 
@@ -254,7 +250,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
             for (UsbConnection usbConnection : printerConnections.getList()) {
                 UsbDevice usbDevice = usbConnection.getDevice();
                 try { if (usbDevice.getDeviceId() == Integer.parseInt(id)) { return usbConnection; } } catch (Exception ignored) {}
-                try { if (usbDevice.getProductName().equals(id)) { return usbConnection; } } catch (Exception ignored) {}
+                try { if (Objects.requireNonNull(usbDevice.getProductName()).trim().equals(id)) { return usbConnection; } } catch (Exception ignored) {}
             }
         }
 
@@ -275,8 +271,8 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                     charsetEncodingData = new JSONObject();
                 }
                 charsetEncoding = new EscPosCharsetEncoding(
-                        charsetEncodingData.optString("charsetName", "windows-1252"),
-                        charsetEncodingData.optInt("charsetId", 16)
+                    charsetEncodingData.optString("charsetName", "windows-1252"),
+                    charsetEncodingData.optInt("charsetId", 16)
                 );
             }
         } catch (Exception exception) {
@@ -288,11 +284,11 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
 
         try {
             return new EscPosPrinter(
-                    deviceConnection,
-                    data.optInt("printerDpi", 203),
-                    (float) data.optDouble("printerWidthMM", 48f),
-                    data.optInt("printerNbrCharactersPerLine", 32),
-                    charsetEncoding
+                deviceConnection,
+                data.optInt("printerDpi", 203),
+                (float) data.optDouble("printerWidthMM", 48f),
+                data.optInt("printerNbrCharactersPerLine", 32),
+                charsetEncoding
             );
         } catch (EscPosConnectionException e) {
             callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
@@ -306,11 +302,11 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
         String type = data.getString("type");
         String id = data.getString("id");
         DeviceConnection deviceConnection = this.getDevice(
-                callbackContext,
-                data.getString("type"),
-                data.optString("id"),
-                data.optString("address"),
-                data.optInt("port")
+            callbackContext,
+            data.getString("type"),
+            data.optString("id"),
+            data.optString("address"),
+            data.optInt("port")
         );
         if (deviceConnection == null) {
             callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
