@@ -1,6 +1,6 @@
 {
   "name": "thermal-printer-cordova-plugin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Cordova wrapper for ESC/POS Thermal Printer library",
   "repository": {
     "type": "git",

@@ -166,7 +166,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 printers.put(printerObj);
             }
         } else {
-            UsbConnections printerConnections = new UsbPrintersConnections(this.cordova.getActivity());
+            UsbConnections printerConnections = new UsbConnections(this.cordova.getActivity());
             for (UsbConnection usbConnection : printerConnections.getList()) {
                 UsbDevice usbDevice = usbConnection.getDevice();
                 JSONObject printerObj = new JSONObject();
@@ -246,7 +246,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
         } else if (type.equals("tcp")) {
             return new TcpConnection(address, port);
         } else {
-            UsbConnections printerConnections = new UsbPrintersConnections(this.cordova.getActivity());
+            UsbConnections printerConnections = new UsbConnections(this.cordova.getActivity());
             for (UsbConnection usbConnection : printerConnections.getList()) {
                 UsbDevice usbDevice = usbConnection.getDevice();
                 try { if (usbDevice.getDeviceId() == Integer.parseInt(id)) { return usbConnection; } } catch (Exception ignored) {}
