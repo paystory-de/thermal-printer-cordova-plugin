@@ -22,7 +22,6 @@ import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnection
 import com.dantsu.escposprinter.connection.tcp.TcpConnection;
 import com.dantsu.escposprinter.connection.usb.UsbConnection;
 import com.dantsu.escposprinter.connection.usb.UsbConnections;
-import com.dantsu.escposprinter.connection.usb.UsbPrintersConnections;
 import com.dantsu.escposprinter.exceptions.EscPosConnectionException;
 import com.dantsu.escposprinter.textparser.PrinterTextParserImg;
 
@@ -37,6 +36,8 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
+    private final HashMap<String, DeviceConnection> connections = new HashMap<>();
+
     @Override
     public boolean execute(String action, JSONArray args,
                            final CallbackContext callbackContext) {
@@ -227,6 +228,18 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
     }
 
     private DeviceConnection getDevice(CallbackContext callbackContext, String type, String id, String address, int port) {
+        String hashKey = type + "-" + id;
+        if (this.connections.containsKey(hashKey)) {
+            DeviceConnection connection = this.connections.get(hashKey);
+            if (connection != null) {
+                if (connection.isConnected()) {
+                    return connection;
+                } else {
+                    this.connections.remove(hashKey);
+                }
+            }
+        }
+
         if (type.equals("bluetooth")) {
             if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH)) {
                 callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
@@ -301,6 +314,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
     private DeviceConnection getPrinterConnection(CallbackContext callbackContext, JSONObject data) throws JSONException {
         String type = data.getString("type");
         String id = data.getString("id");
+        String hashKey = type + "-" + id;
         DeviceConnection deviceConnection = this.getDevice(
             callbackContext,
             data.getString("type"),
@@ -314,6 +328,9 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 put("type", type);
                 put("id", id);
             }}));
+        }
+        if (!this.connections.containsKey(hashKey)) {
+            this.connections.put(hashKey, deviceConnection);
         }
         return deviceConnection;
     }
