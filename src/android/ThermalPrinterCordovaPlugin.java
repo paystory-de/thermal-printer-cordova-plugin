@@ -2,6 +2,7 @@ package de.paystory.thermal_printer;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -153,18 +154,27 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 }}));
                 return;
             }
-            BluetoothConnections printerConnections = new BluetoothConnections();
-            for (BluetoothConnection bluetoothConnection : printerConnections.getList()) {
-                BluetoothDevice bluetoothDevice = bluetoothConnection.getDevice();
-                JSONObject printerObj = new JSONObject();
-                try { printerObj.put("address", bluetoothDevice.getAddress()); } catch (Exception ignored) {}
-                try { printerObj.put("bondState", bluetoothDevice.getBondState()); } catch (Exception ignored) {}
-                try { printerObj.put("name", bluetoothDevice.getName()); } catch (Exception ignored) {}
-                try { printerObj.put("type", bluetoothDevice.getType()); } catch (Exception ignored) {}
-                try { printerObj.put("features", bluetoothDevice.getUuids()); } catch (Exception ignored) {}
-                try { printerObj.put("deviceClass", bluetoothDevice.getBluetoothClass().getDeviceClass()); } catch (Exception ignored) {}
-                try { printerObj.put("majorDeviceClass", bluetoothDevice.getBluetoothClass().getMajorDeviceClass()); } catch (Exception ignored) {}
-                printers.put(printerObj);
+            if (!this.checkBluetooth(callbackContext)) {
+                return;
+            }
+            try {
+                BluetoothConnections printerConnections = new BluetoothConnections();
+                for (BluetoothConnection bluetoothConnection : printerConnections.getList()) {
+                    BluetoothDevice bluetoothDevice = bluetoothConnection.getDevice();
+                    JSONObject printerObj = new JSONObject();
+                    try { printerObj.put("address", bluetoothDevice.getAddress()); } catch (Exception ignored) {}
+                    try { printerObj.put("bondState", bluetoothDevice.getBondState()); } catch (Exception ignored) {}
+                    try { printerObj.put("name", bluetoothDevice.getName()); } catch (Exception ignored) {}
+                    try { printerObj.put("type", bluetoothDevice.getType()); } catch (Exception ignored) {}
+                    try { printerObj.put("features", bluetoothDevice.getUuids()); } catch (Exception ignored) {}
+                    try { printerObj.put("deviceClass", bluetoothDevice.getBluetoothClass().getDeviceClass()); } catch (Exception ignored) {}
+                    try { printerObj.put("majorDeviceClass", bluetoothDevice.getBluetoothClass().getMajorDeviceClass()); } catch (Exception ignored) {}
+                    printers.put(printerObj);
+                }
+            } catch (Exception e) {
+                callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                    put("error", e.getMessage());
+                }}));
             }
         } else {
             UsbConnections printerConnections = new UsbConnections(this.cordova.getActivity());
@@ -241,6 +251,9 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
         }
 
         if (type.equals("bluetooth")) {
+            if (!this.checkBluetooth(callbackContext)) {
+                return null;
+            }
             if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH)) {
                 callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
                     put("error", "Missing permission for " + Manifest.permission.DISABLE_KEYGUARD);
@@ -333,5 +346,21 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
             this.connections.put(hashKey, deviceConnection);
         }
         return deviceConnection;
+    }
+
+    private boolean checkBluetooth(CallbackContext callbackContext) {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                put("error", "Device doesn't support Bluetooth!");
+            }}));
+            return false;
+        } else if (!mBluetoothAdapter.isEnabled()) {
+            callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                put("error", "Device not enabled Bluetooth!");
+            }}));
+            return false;
+        }
+        return true;
     }
 }
