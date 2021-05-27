@@ -22,6 +22,8 @@
         </config-file>
 
         <source-file src="src/android/ThermalPrinterCordovaPlugin.java" target-dir="src/de/paystory/thermal_printer" />
+        <source-file src="src/aidl/iposprinterservice/IPosPrinterCallback.aidl" target-dir="src/com/iposprinter/iposprinterservice" />
+        <source-file src="src/aidl/iposprinterservice/IPosPrinterService.aidl" target-dir="src/com/iposprinter/iposprinterservice" />
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
     </platform>
 </plugin>
