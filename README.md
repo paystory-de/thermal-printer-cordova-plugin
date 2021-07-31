@@ -3,7 +3,7 @@
 
 ---
 
-This plugin is a wrapper for the [https://github.com/DantSu/ESCPOS-ThermalPrinter-Android](Android library for ESC/POS Thermal Printer).
+This plugin is a wrapper for the [Android library for ESC/POS Thermal Printer](https://github.com/DantSu/ESCPOS-ThermalPrinter-Android).
 
 ### Install
 
