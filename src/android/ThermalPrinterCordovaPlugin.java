@@ -42,7 +42,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args,
                            final CallbackContext callbackContext) {
-        cordova.getActivity().runOnUiThread(() -> {
+        cordova.getThreadPool().execute(() -> {
             try {
                 if (action.equals("listPrinters")) {
                     try {
@@ -316,7 +316,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 data.optInt("printerNbrCharactersPerLine", 32),
                 charsetEncoding
             );
-        } catch (EscPosConnectionException e) {
+        } catch (Exception e) {
             callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
                 put("error", e.getMessage());
             }}));
@@ -333,7 +333,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
             data.getString("type"),
             data.optString("id"),
             data.optString("address"),
-            data.optInt("port")
+            data.optInt("port", 9100)
         );
         if (deviceConnection == null) {
             callbackContext.error(new JSONObject(new HashMap<String, Object>() {{

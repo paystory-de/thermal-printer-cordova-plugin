@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="thermal-printer-cordova-plugin" version="1.0.5">
+        id="thermal-printer-cordova-plugin" version="1.0.6">
     <name>Cordova Plugin ESCPOS Printer</name>
     <description>Cordova wrapper for ESC/POS Thermal Printer library</description>
     <license>Apache 2.0</license>
