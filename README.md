@@ -22,9 +22,97 @@ This plugin is a wrapper for the [Android library for ESC/POS Thermal Printer](h
 
 Don't forget to add BLUETOOTH and INTERNET (for TCP) permissions and for USB printers the `android.hardware.usb.host` feature to the `AndroidManifest.xml`.
 
-    <uses-feature android:name="android.hardware.usb.host" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.INTERNET" />
+```xml
+<uses-feature android:name="android.hardware.usb.host" />
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+### Examples
+
+#### Notice for TypeScript-Developers
+
+You can easily import and use the ThermalPrinter plugin in your TypeScript-Projects.
+
+```typescript
+import { ThermalPrinterPlugin } from 'thermal-printer-cordova-plugin/src';
+
+declare let ThermalPrinter: ThermalPrinterPlugin;
+```
+
+And then use the following examples in your code.
+
+#### Print via Bluetooth
+
+Printing via Bluetooth is as easy as possible.
+
+```javascript
+ThermalPrinter.printFormattedText({
+    type: 'bluetooth',
+    id: 'first', // You can also use the identifier directly i. e. 00:11:22:33:44:55 (address) or name
+    text: '[C]<u><font size='big'>Hello World</font></u>' // new lines with "\n"
+}, function() {
+    console.log('Successfully printed!');
+}, function(error) {
+    console.error('Printing error', error);
+});
+```
+
+**Notice:** If not working please ensure that you have the printer connected. (Settings -> Bluetooth -> Pairing)
+If you have other issues maybe you have not granted the `android.permission.BLUETOOTH` permission.
+
+#### Print via TCP
+
+Printing via TCP is as easy as possible.
+
+```javascript
+ThermalPrinter.printFormattedText({
+    type: 'tcp',
+    address: '192.168.1.123',
+    port: 9100,
+    id: 'tcp-printer-001', // Use an unique identifier for each printer i. e. address:port or name
+    text: '[C]<u><font size='big'>Hello World</font></u>' // new lines with "\n"
+}, function() {
+    console.log('Successfully printed!');
+}, function(error) {
+    console.error('Printing error', error);
+});
+```
+
+**Notice:** If not working please ensure that your device can ping the printer. And the printer must be a POSPrinter!
+Also ensure that you're using the correct port. 9100 is default for the thermal printers.
+
+#### Print via USB (incl. listPrinters and requestPermissions)
+
+1. First we get our printer because we don't know the printer's ID.
+2. Then we request permissions for printing. This is needed because Android will not allow us to access all devices.
+3. And finally we can print with our device.
+
+```javascript
+ThermalPrinter.listPrinters({type: 'usb'}, function(printers) {
+    if (printers.length > 0) {
+        var printer = printers[0];
+        ThermalPrinter.requestPermissions(printer, function() {
+            // Permission granted - We can print!
+            ThermalPrinter.printFormattedText({
+                type: 'usb',
+                id: printer.id,
+                text: '[C]<u><font size='big'>Hello World</font></u>' // new lines with "\n"
+            }, function() {
+                console.log('Successfully printed!');
+            }, function(error) {
+                console.error('Printing error', error);
+            });
+        }, function(error) {
+            console.error('Permission denied - We can\'t print!');
+        });
+    } else {
+        console.error('No printers found!');
+    }
+}, function(error) {
+    console.error('Ups, we cant list the printers!', error);
+});
+```
 
 ### listPrinters(data, successCallback, errorCallback)
 List available printers
