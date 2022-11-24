@@ -99,7 +99,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 cordova.getActivity().getBaseContext(),
                 0,
                 new Intent(intentName),
-                0
+                FLAG_MUTABLE
             );
 
             ArrayList<BroadcastReceiver> broadcastReceiverArrayList = new ArrayList<>();
