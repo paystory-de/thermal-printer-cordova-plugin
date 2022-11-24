@@ -1,5 +1,7 @@
 package de.paystory.thermal_printer;
 
+import static android.app.PendingIntent.FLAG_MUTABLE;
+
 import android.Manifest;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
