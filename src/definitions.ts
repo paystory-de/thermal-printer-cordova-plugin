@@ -25,6 +25,13 @@ export interface PrintFormattedText extends PrinterToUse {
     text: string;
     mmFeedPaper?: number;
     dotsFeedPaper?: number;
+    printerDpi?: number;
+    printerWidthMM?: number;
+    printerNbrCharactersPerLine?: number;
+    charsetEncoding?: {
+        charsetName: string,
+        charsetId: number
+    };
 }
 
 export interface BitmapToHexadecimalString extends PrinterToUse {
