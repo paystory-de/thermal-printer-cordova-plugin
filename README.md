@@ -28,6 +28,29 @@ Don't forget to add BLUETOOTH and INTERNET (for TCP) permissions and for USB pri
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
+In `capacitor.config.json`
+```ts
+"android": {
+    "permissions": [
+    {
+        "name": "BLUETOOTH",
+        "description": "Needed for Bluetooth communication"
+    },
+    {
+        "name": "BLUETOOTH_CONNECT",
+        "description": "Needed for Bluetooth communication"
+    },
+    {
+        "name": "BLUETOOTH_SCAN",
+        "description": "Needed for Bluetooth communication"
+    },
+    {
+        "name": "BLUETOOTH_ADMIN",
+        "description": "Needed for Bluetooth communication"
+    }
+]
+```
+
 ### Examples
 
 #### Notice for TypeScript-Developers
@@ -138,8 +161,11 @@ Print a formatted text and feed paper
 | [data.id] | <code>string</code> \| <code>number</code> | ID of printer to find (Bluetooth: address, TCP: Use address + port instead, USB: deviceId) |
 | [data.address] | <code>string</code> | If type is "tcp" then the IP Address of the printer |
 | [data.port] | <code>number</code> | If type is "tcp" then the Port of the printer |
-| [data.mmFeedPaper] | <code>number</code> | Millimeter distance feed paper at the end |
-| [data.dotsFeedPaper] | <code>number</code> | Distance feed paper at the end |
+| [data.mmFeedPaper] | <code>number</code><code>optional</code> | Millimeter distance feed paper at the end |
+| [data.dotsFeedPaper] | <code>number</code><code>optional</code> | Distance feed paper at the end |
+| [data.printerDpi] | <code>number</code><code>optional</code> | Printer DPI |
+| [data.printerWidthMM] | <code>number</code><code>optional</code> | Paper Width in mm |
+| [data.printerNbrCharactersPerLine] | <code>number</code><code>optional</code> | Number of characters per line |
 | data.text | <code>string</code> | Formatted text to be printed |
 | successCallback | <code>function</code> | Result on success |
 | errorCallback | <code>function</code> | Result on failure |
@@ -158,8 +184,11 @@ Print a formatted text, feed paper and cut the paper
 | [data.id] | <code>string</code> \| <code>number</code> | ID of printer to find (Bluetooth: address, TCP: Use address + port instead, USB: deviceId) |
 | [data.address] | <code>string</code> | If type is "tcp" then the IP Address of the printer |
 | [data.port] | <code>number</code> | If type is "tcp" then the Port of the printer |
-| [data.mmFeedPaper] | <code>number</code> | Millimeter distance feed paper at the end |
-| [data.dotsFeedPaper] | <code>number</code> | Distance feed paper at the end |
+| [data.mmFeedPaper] | <code>number</code><code>optional</code> | Millimeter distance feed paper at the end |
+| [data.dotsFeedPaper] | <code>number</code><code>optional</code> | Distance feed paper at the end |
+| [data.printerDpi] | <code>number</code><code>optional</code> | Printer DPI |
+| [data.printerWidthMM] | <code>number</code><code>optional</code> | Paper Width in mm |
+| [data.printerNbrCharactersPerLine] | <code>number</code><code>optional</code> | Number of characters per line |
 | data.text | <code>string</code> | Formatted text to be printed |
 | successCallback | <code>function</code> | Result on success |
 | errorCallback | <code>function</code> | Result on failure |
@@ -221,6 +250,10 @@ Convert Drawable instance to a hexadecimal string of the image data
 | [data.id] | <code>string</code> \| <code>number</code> | ID of printer to find (Bluetooth: address, TCP: Use address + port instead, USB: deviceId) |
 | [data.address] | <code>string</code> | If type is "tcp" then the IP Address of the printer |
 | [data.port] | <code>number</code> | If type is "tcp" then the Port of the printer |
+| [data.mmFeedPaper] | <code>number</code><code>optional</code> | Millimeter distance feed paper at the end |
+| [data.dotsFeedPaper] | <code>number</code><code>optional</code> | Distance feed paper at the end |
+| [data.printerDpi] | <code>number</code><code>optional</code> | Printer DPI |
+| [data.printerWidthMM] | <code>number</code><code>optional</code> | Paper Width in mm |
 | data.base64 | <code>string</code> | Base64 encoded picture string to convert |
 | successCallback | <code>function</code> | Result on success |
 | errorCallback | <code>function</code> | Result on failure |

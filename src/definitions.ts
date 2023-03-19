@@ -19,10 +19,6 @@ export interface PrinterToUse {
     id: string | number;
     address?: string;
     port?: number;
-}
-
-export interface PrintFormattedText extends PrinterToUse {
-    text: string;
     mmFeedPaper?: number;
     dotsFeedPaper?: number;
     printerDpi?: number;
@@ -32,6 +28,10 @@ export interface PrintFormattedText extends PrinterToUse {
         charsetName: string,
         charsetId: number
     };
+}
+
+export interface PrintFormattedText extends PrinterToUse {
+    text: string;
 }
 
 export interface BitmapToHexadecimalString extends PrinterToUse {
@@ -137,7 +137,8 @@ export interface ThermalPrinterPlugin {
 
   /**
    * Convert Drawable instance to a hexadecimal string of the image data
-   *
+   * Note: Supports only 255px height 
+   * 
    * @param {Object[]} data - Data object
    * @param {"bluetooth"|"tcp"|"usb"} data.type - List all bluetooth or usb printers
    * @param {string|number} [data.id] - ID of printer to find (Bluetooth: address, TCP: Use address + port instead, USB: deviceId)
