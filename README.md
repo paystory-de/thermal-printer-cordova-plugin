@@ -24,8 +24,8 @@ Don't forget to add BLUETOOTH and INTERNET (for TCP) permissions and for USB pri
 
 ```xml
 <uses-feature android:name="android.hardware.usb.host" />
-<uses-permission android:name="android.permission.BLUETOOTH" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:maxSdkVersion="30" android:name="android.permission.BLUETOOTH" />
+<uses-permission android:maxSdkVersion="30" android:name="android.permission.BLUETOOTH_ADMIN" />
 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 ```
