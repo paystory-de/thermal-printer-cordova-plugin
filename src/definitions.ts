@@ -135,6 +135,19 @@ export interface ThermalPrinterPlugin {
    */
   requestPermissions(data: PrinterToUse, success: (value: RequestPermissionsResult) => any, error: (value: ErrorResult) => void);
 
+   /**
+   * Request permissions for Bluetooth
+   *
+   * @param {Object[]} data - Data object
+   * @param {"bluetooth"} data.type - List all bluetooth printers
+   * @param {string|number} [data.id] - ID of printer to find (Bluetooth: address, TCP: Use address + port instead, USB: deviceId)
+   * @param {string} [data.address] - If type is "tcp" then the IP Address of the printer
+   * @param {number} [data.port] - If type is "tcp" then the Port of the printer
+   * @param {function} success
+   * @param {function} error
+   */
+  requestBTPermissions(data: PrinterToUse, success: (value: RequestPermissionsResult) => any, error: (value: ErrorResult) => void);
+
   /**
    * Convert Drawable instance to a hexadecimal string of the image data
    * Note: Supports only 255px height 

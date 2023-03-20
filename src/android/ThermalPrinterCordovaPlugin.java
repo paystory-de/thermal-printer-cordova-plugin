@@ -38,8 +38,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
+import android.os.Build;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
     private final HashMap<String, DeviceConnection> connections = new HashMap<>();
+
+    public static final int PERMISSION_BLUETOOTH = 1;
+    public static final int PERMISSION_BLUETOOTH_ADMIN = 2;
+    public static final int PERMISSION_BLUETOOTH_CONNECT = 3;
+    public static final int PERMISSION_BLUETOOTH_SCAN = 4;
 
     @Override
     public boolean execute(String action, JSONArray args,
@@ -52,6 +62,8 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                } else if (action.startsWith("requestBTPermissions")) {
+                    ThermalPrinterCordovaPlugin.this.requestBTPermissions(callbackContext, args.getJSONObject(0));
                 } else if (action.startsWith("printFormattedText")) {
                     ThermalPrinterCordovaPlugin.this.printFormattedText(callbackContext, action, args.getJSONObject(0));
                 } else if (action.equals("getEncoding")) {
@@ -69,6 +81,35 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
         });
 
         return true;
+    }
+
+    private void requestBTPermissions(CallbackContext callbackContext, JSONObject data) throws JSONException {
+        try {
+            synchronized (this) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
+                        ActivityCompat.requestPermissions(this.cordova.getActivity(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, PERMISSION_BLUETOOTH_CONNECT);
+                    }
+                    if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH_SCAN)) {
+                        ActivityCompat.requestPermissions(this.cordova.getActivity(), new String[]{Manifest.permission.BLUETOOTH_SCAN}, PERMISSION_BLUETOOTH_SCAN);
+                    }
+                }else{
+                    if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH)) {
+                        ActivityCompat.requestPermissions(this.cordova.getActivity(), new String[]{Manifest.permission.BLUETOOTH}, PERMISSION_BLUETOOTH);
+                    }
+                    if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH_ADMIN)) {
+                        ActivityCompat.requestPermissions(this.cordova.getActivity(), new String[]{Manifest.permission.BLUETOOTH_ADMIN}, PERMISSION_BLUETOOTH_ADMIN);
+                    }
+                }
+                callbackContext.success(new JSONObject(new HashMap<String, Object>() {{
+                    put("granted", true);
+                }}));
+            }
+        } catch (Exception e) {
+            callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                put("granted", false);
+            }}));
+        }
     }
 
     private void bitmapToHexadecimalString(CallbackContext callbackContext, JSONObject data) throws JSONException {

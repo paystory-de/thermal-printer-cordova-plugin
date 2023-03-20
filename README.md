@@ -25,30 +25,15 @@ Don't forget to add BLUETOOTH and INTERNET (for TCP) permissions and for USB pri
 ```xml
 <uses-feature android:name="android.hardware.usb.host" />
 <uses-permission android:name="android.permission.BLUETOOTH" />
-<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 ```
 
-In `capacitor.config.json`
-```ts
-"android": {
-    "permissions": [
-    {
-        "name": "BLUETOOTH",
-        "description": "Needed for Bluetooth communication"
-    },
-    {
-        "name": "BLUETOOTH_CONNECT",
-        "description": "Needed for Bluetooth communication"
-    },
-    {
-        "name": "BLUETOOTH_SCAN",
-        "description": "Needed for Bluetooth communication"
-    },
-    {
-        "name": "BLUETOOTH_ADMIN",
-        "description": "Needed for Bluetooth communication"
-    }
-]
+Run this for getting Bluetooth access permission if needed
+
+```javascript
+ThermalPrinter.requestBTPermissions({type: 'bluetooth'}, function(result){ console.log(result) }, function(error){ console.log(error) });
 ```
 
 ### Examples
