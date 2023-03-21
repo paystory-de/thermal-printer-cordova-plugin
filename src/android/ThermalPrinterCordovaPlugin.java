@@ -42,6 +42,7 @@ import android.os.Build;
 import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import org.apache.cordova.CordovaInterface;
 
 public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
     private final HashMap<String, DeviceConnection> connections = new HashMap<>();
@@ -50,10 +51,10 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
     public static final int PERMISSION_BLUETOOTH_ADMIN = 2;
     public static final int PERMISSION_BLUETOOTH_CONNECT = 3;
     public static final int PERMISSION_BLUETOOTH_SCAN = 4;
+    private CallbackContext btCallbackContext;
 
     @Override
-    public boolean execute(String action, JSONArray args,
-                           final CallbackContext callbackContext) {
+    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
                 if (action.equals("listPrinters")) {
@@ -63,7 +64,7 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                         e.printStackTrace();
                     }
                 } else if (action.startsWith("requestBTPermissions")) {
-                    ThermalPrinterCordovaPlugin.this.requestBTPermissions(callbackContext, args.getJSONObject(0));
+                    ThermalPrinterCordovaPlugin.this.requestBTPermissions(callbackContext , args.getJSONObject(0));
                 } else if (action.startsWith("printFormattedText")) {
                     ThermalPrinterCordovaPlugin.this.printFormattedText(callbackContext, action, args.getJSONObject(0));
                 } else if (action.equals("getEncoding")) {
@@ -101,12 +102,55 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                         ActivityCompat.requestPermissions(this.cordova.getActivity(), new String[]{Manifest.permission.BLUETOOTH_ADMIN}, PERMISSION_BLUETOOTH_ADMIN);
                     }
                 }
-                callbackContext.success(new JSONObject(new HashMap<String, Object>() {{
-                    put("granted", true);
-                }}));
+                if ((this.cordova.hasPermission(Manifest.permission.BLUETOOTH_CONNECT) || this.cordova.hasPermission(Manifest.permission.BLUETOOTH_SCAN)) || (this.cordova.hasPermission(Manifest.permission.BLUETOOTH) || this.cordova.hasPermission(Manifest.permission.BLUETOOTH_ADMIN))) {
+                    CordovaInterface cordova = this.cordova;
+                    callbackContext.success(new JSONObject(new HashMap<String, Object>() {{
+                        put("granted", true);
+                        put("BLUETOOTH", cordova.hasPermission(Manifest.permission.BLUETOOTH));
+                        put("BLUETOOTH_ADMIN", cordova.hasPermission(Manifest.permission.BLUETOOTH_ADMIN));
+                        put("BLUETOOTH_CONNECT", cordova.hasPermission(Manifest.permission.BLUETOOTH_CONNECT));
+                        put("BLUETOOTH_SCAN", cordova.hasPermission(Manifest.permission.BLUETOOTH_SCAN));
+                    }}));
+                    return;
+                }
+                this.btCallbackContext = callbackContext;
             }
         } catch (Exception e) {
+            CordovaInterface cordova = this.cordova;
             callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                put("granted", false);
+                put("BLUETOOTH", cordova.hasPermission(Manifest.permission.BLUETOOTH));
+                put("BLUETOOTH_ADMIN", cordova.hasPermission(Manifest.permission.BLUETOOTH_ADMIN));
+                put("BLUETOOTH_CONNECT", cordova.hasPermission(Manifest.permission.BLUETOOTH_CONNECT));
+                put("BLUETOOTH_SCAN", cordova.hasPermission(Manifest.permission.BLUETOOTH_SCAN));
+            }}));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
+        try{
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            switch (requestCode) {
+                case PERMISSION_BLUETOOTH_CONNECT:
+                case PERMISSION_BLUETOOTH_SCAN:
+                case PERMISSION_BLUETOOTH:
+                case PERMISSION_BLUETOOTH_ADMIN:
+                    synchronized (this) {
+                        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            btCallbackContext.success(new JSONObject(new HashMap<String, Object>() {{
+                                put("granted", true);
+                            }}));
+                        } else {
+                            btCallbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                                put("granted", false);
+                            }}));
+                        }
+                    }
+                    break;
+            }
+        } catch (JSONException e) {
+            btCallbackContext.error(new JSONObject(new HashMap<String, Object>() {{
                 put("granted", false);
             }}));
         }

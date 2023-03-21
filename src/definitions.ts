@@ -40,6 +40,10 @@ export interface BitmapToHexadecimalString extends PrinterToUse {
 
 export interface RequestPermissionsResult {
     granted: boolean;
+    BLUETOOTH?: boolean;
+    BLUETOOTH_ADMIN?: boolean;
+    BLUETOOTH_CONNECT?: boolean;
+    BLUETOOTH_SCAN?: boolean;
 }
 
 export interface GetEncodingResult {
