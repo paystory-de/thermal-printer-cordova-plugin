@@ -19,10 +19,6 @@ export interface PrinterToUse {
     id: string | number;
     address?: string;
     port?: number;
-}
-
-export interface PrintFormattedText extends PrinterToUse {
-    text: string;
     mmFeedPaper?: number;
     dotsFeedPaper?: number;
     printerDpi?: number;
@@ -34,12 +30,20 @@ export interface PrintFormattedText extends PrinterToUse {
     };
 }
 
+export interface PrintFormattedText extends PrinterToUse {
+    text: string;
+}
+
 export interface BitmapToHexadecimalString extends PrinterToUse {
     base64: string;
 }
 
 export interface RequestPermissionsResult {
     granted: boolean;
+    BLUETOOTH?: boolean;
+    BLUETOOTH_ADMIN?: boolean;
+    BLUETOOTH_CONNECT?: boolean;
+    BLUETOOTH_SCAN?: boolean;
 }
 
 export interface GetEncodingResult {
@@ -135,9 +139,23 @@ export interface ThermalPrinterPlugin {
    */
   requestPermissions(data: PrinterToUse, success: (value: RequestPermissionsResult) => any, error: (value: ErrorResult) => void);
 
+   /**
+   * Request permissions for Bluetooth
+   *
+   * @param {Object[]} data - Data object
+   * @param {"bluetooth"} data.type - List all bluetooth printers
+   * @param {string|number} [data.id] - ID of printer to find (Bluetooth: address, TCP: Use address + port instead, USB: deviceId)
+   * @param {string} [data.address] - If type is "tcp" then the IP Address of the printer
+   * @param {number} [data.port] - If type is "tcp" then the Port of the printer
+   * @param {function} success
+   * @param {function} error
+   */
+  requestBTPermissions(data: PrinterToUse, success: (value: RequestPermissionsResult) => any, error: (value: ErrorResult) => void);
+
   /**
    * Convert Drawable instance to a hexadecimal string of the image data
-   *
+   * Note: Supports only 255px height 
+   * 
    * @param {Object[]} data - Data object
    * @param {"bluetooth"|"tcp"|"usb"} data.type - List all bluetooth or usb printers
    * @param {string|number} [data.id] - ID of printer to find (Bluetooth: address, TCP: Use address + port instead, USB: deviceId)

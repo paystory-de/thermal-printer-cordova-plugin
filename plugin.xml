@@ -17,8 +17,11 @@
 
         <config-file parent="/*" target="AndroidManifest.xml">
             <uses-feature android:name="android.hardware.usb.host" />
-            <uses-permission android:name="android.permission.BLUETOOTH" />
+            <uses-permission android:maxSdkVersion="30" android:name="android.permission.BLUETOOTH" />
             <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:maxSdkVersion="30" android:name="android.permission.BLUETOOTH_ADMIN" />
+            <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+            <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
         </config-file>
 
         <source-file src="src/android/ThermalPrinterCordovaPlugin.java" target-dir="src/de/paystory/thermal_printer" />
