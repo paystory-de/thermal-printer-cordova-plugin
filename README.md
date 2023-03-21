@@ -223,6 +223,19 @@ Request permissions for USB printers
 | successCallback | <code>function</code> | Result on success |
 | errorCallback | <code>function</code> | Result on failure |
 
+
+<a name="requestBTPermissions"></a>
+
+### requestBTPermissions(data, successCallback, errorCallback)
+Request permissions for Bluetooth
+
+| Param | Type | Description |
+| --- | --- | --- |
+| data | <code>Array.&lt;Object&gt;</code> | Data object |
+| data.type | <code>&quot;bluetooth&quot;</code> | List all bluetooth or usb printers |
+| successCallback | <code>function</code> | Result on success |
+| errorCallback | <code>function</code> | Result on failure |
+
 <a name="bitmapToHexadecimalString"></a>
 
 ### bitmapToHexadecimalString(data, successCallback, errorCallback)
