@@ -227,7 +227,7 @@ Request permissions for USB printers
 <a name="requestBTPermissions"></a>
 
 ### requestBTPermissions(data, successCallback, errorCallback)
-Request permissions for Bluetooth
+Request permissions for bluetooth
 
 | Param | Type | Description |
 | --- | --- | --- |
