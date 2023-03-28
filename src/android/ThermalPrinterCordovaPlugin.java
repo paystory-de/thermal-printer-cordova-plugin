@@ -235,12 +235,12 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
 
         String type = data.getString("type");
         if (type.equals("bluetooth")) {
-            if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH)) {
-                callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
-                    put("error", "Missing permission for " + Manifest.permission.BLUETOOTH);
-                }}));
-                return;
-            }
+            // if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH)) {
+            //     callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+            //         put("error", "Missing permission for " + Manifest.permission.BLUETOOTH);
+            //     }}));
+            //     return;
+            // }
             if (!this.checkBluetooth(callbackContext)) {
                 return;
             }
@@ -341,12 +341,12 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
             if (!this.checkBluetooth(callbackContext)) {
                 return null;
             }
-            if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH)) {
-                callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
-                    put("error", "Missing permission for " + Manifest.permission.DISABLE_KEYGUARD);
-                }}));
-                return null;
-            }
+            // if (!this.cordova.hasPermission(Manifest.permission.BLUETOOTH)) {
+            //     callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+            //         put("error", "Missing permission for " + Manifest.permission.DISABLE_KEYGUARD);
+            //     }}));
+            //     return null;
+            // }
             if (id.equals("first")) {
                 return BluetoothPrintersConnections.selectFirstPaired();
             }

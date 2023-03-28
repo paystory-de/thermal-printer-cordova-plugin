@@ -64,7 +64,7 @@ export interface ThermalPrinterPlugin {
    * @param {function} success
    * @param {function} error
    */
-  listPrinters(data: { type: 'bluetooth' | 'usb'; }, success: (value: Printer[]) => any, error: (value: ErrorResult) => void);
+  listPrinters(data: { type: 'bluetooth' | 'usb'; }, success: (value: Printer[]) => any, error: (value: ErrorResult) => void): void;
 
   /**
    * Print a formatted text and feed paper
@@ -81,7 +81,7 @@ export interface ThermalPrinterPlugin {
    * @param {function} success
    * @param {function} error
    */
-  printFormattedText(data: PrintFormattedText, success: () => void, error: (value: ErrorResult) => void);
+  printFormattedText(data: PrintFormattedText, success: () => void, error: (value: ErrorResult) => void): void;
 
   /**
    * Print a formatted text, feed paper and cut the paper
@@ -98,7 +98,7 @@ export interface ThermalPrinterPlugin {
    * @param {function} success
    * @param {function} error
    */
-  printFormattedTextAndCut(data: PrintFormattedText, success: () => void, error: (value: ErrorResult) => void);
+  printFormattedTextAndCut(data: PrintFormattedText, success: () => void, error: (value: ErrorResult) => void): void;
 
   /**
    * Get the printer encoding when available
@@ -111,7 +111,7 @@ export interface ThermalPrinterPlugin {
    * @param {function} success
    * @param {function} error
    */
-  getEncoding(data: PrinterToUse, success: (value: GetEncodingResult) => any, error: (value: ErrorResult) => void);
+  getEncoding(data: PrinterToUse, success: (value: GetEncodingResult) => any, error: (value: ErrorResult) => void): void;
 
   /**
    * Close the connection with the printer
@@ -124,7 +124,7 @@ export interface ThermalPrinterPlugin {
    * @param {function} success
    * @param {function} error
    */
-  disconnectPrinter(data: PrinterToUse, success: () => void, error: (value: ErrorResult) => void);
+  disconnectPrinter(data: PrinterToUse, success: () => void, error: (value: ErrorResult) => void): void;
 
   /**
    * Request permissions for USB printers
@@ -137,7 +137,7 @@ export interface ThermalPrinterPlugin {
    * @param {function} success
    * @param {function} error
    */
-  requestPermissions(data: PrinterToUse, success: (value: RequestPermissionsResult) => any, error: (value: ErrorResult) => void);
+  requestPermissions(data: PrinterToUse, success: (value: RequestPermissionsResult) => any, error: (value: ErrorResult) => void): void;
 
    /**
    * Request permissions for Bluetooth
@@ -150,7 +150,7 @@ export interface ThermalPrinterPlugin {
    * @param {function} success
    * @param {function} error
    */
-  requestBTPermissions(data: PrinterToUse, success: (value: RequestPermissionsResult) => any, error: (value: ErrorResult) => void);
+  requestBTPermissions(data: PrinterToUse, success: (value: RequestPermissionsResult) => any, error: (value: ErrorResult) => void): void;
 
   /**
    * Convert Drawable instance to a hexadecimal string of the image data
@@ -165,5 +165,5 @@ export interface ThermalPrinterPlugin {
    * @param {function} success
    * @param {function} error
    */
-  bitmapToHexadecimalString(data: BitmapToHexadecimalString, success: (value: string) => any, error: (value: ErrorResult) => void);
+  bitmapToHexadecimalString(data: BitmapToHexadecimalString, success: (value: string) => any, error: (value: ErrorResult) => void): void;
 }
