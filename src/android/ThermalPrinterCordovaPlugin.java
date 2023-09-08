@@ -18,6 +18,7 @@ import android.util.Base64;
 
 import com.dantsu.escposprinter.EscPosCharsetEncoding;
 import com.dantsu.escposprinter.EscPosPrinter;
+import com.dantsu.escposprinter.EscPosPrinterCommands;
 import com.dantsu.escposprinter.connection.DeviceConnection;
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection;
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnections;
@@ -69,6 +70,8 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                     ThermalPrinterCordovaPlugin.this.printFormattedText(callbackContext, action, args.getJSONObject(0));
                 } else if (action.equals("getEncoding")) {
                     ThermalPrinterCordovaPlugin.this.getEncoding(callbackContext, args.getJSONObject(0));
+                } else if (action.equals("openCashBox")) {
+                    ThermalPrinterCordovaPlugin.this.openCashBox(callbackContext, args.getJSONObject(0));
                 } else if (action.equals("disconnectPrinter")) {
                     ThermalPrinterCordovaPlugin.this.disconnectPrinter(callbackContext, args.getJSONObject(0));
                 } else if (action.equals("requestPermissions")) {
@@ -316,6 +319,27 @@ public class ThermalPrinterCordovaPlugin extends CordovaPlugin {
                 callbackContext.success("null");
             }
         }}));
+    }
+    
+    private void openCashBox(CallbackContext callbackContext, JSONObject data) throws JSONException {
+        
+        DeviceConnection deviceConnection = this.getPrinterConnection(callbackContext, data);
+        EscPosPrinterCommands EscPosPrinterCommands = new EscPosPrinterCommands(deviceConnection, new EscPosCharsetEncoding("windows-1252", 16));
+        try {
+            EscPosPrinterCommands.openCashBox();
+        new EscPosPrinter(
+                EscPosPrinterCommands,
+                data.optInt("printerDpi", 203),
+                (float) data.optDouble("printerWidthMM", 48f),
+                data.optInt("printerNbrCharactersPerLine", 32)
+            );
+        } catch (Exception e) {
+            callbackContext.error(new JSONObject(new HashMap<String, Object>() {{
+                put("error", e.getMessage());
+            }}));
+            throw new JSONException(e.getMessage());
+        }
+        callbackContext.success();
     }
 
     private void disconnectPrinter(CallbackContext callbackContext, JSONObject data) throws JSONException {
