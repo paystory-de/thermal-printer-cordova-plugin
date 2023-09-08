@@ -113,6 +113,18 @@ export interface ThermalPrinterPlugin {
    */
   getEncoding(data: PrinterToUse, success: (value: GetEncodingResult) => any, error: (value: ErrorResult) => void): void;
 
+    /**
+   * Get the printer encoding when available
+   *
+   * @param {Object[]} data - Data object
+   * @param {"bluetooth"|"tcp"|"usb"} data.type - List all bluetooth or usb printers
+   * @param {string|number} [data.id] - ID of printer to find (Bluetooth: address, TCP: Use address + port instead, USB: deviceId)
+   * @param {string} [data.address] - If type is "tcp" then the IP Address of the printer
+   * @param {number} [data.port] - If type is "tcp" then the Port of the printer
+   * @param {function} success
+   * @param {function} error
+   */
+    openCashBox(data: PrinterToUse, success: (value: ErrorResult) => void, error: (value: ErrorResult) => void): void;
   /**
    * Close the connection with the printer
    *
