@@ -62,6 +62,21 @@ module.exports = {
    * @param {function} successCallback - Result on success
    * @param {function} errorCallback - Result on failure
    */
+  openCashBox: function(data, successCallback, errorCallback) {
+      cordova.exec(successCallback, errorCallback, 'ThermalPrinter', 'openCashBox', [data]);
+    },
+
+  /**
+   * Get the printer encoding when available
+   *
+   * @param {Object[]} data - Data object
+   * @param {"bluetooth"|"tcp"|"usb"} data.type - List all bluetooth or usb printers
+   * @param {string|number} [data.id] - ID of printer to find (Bluetooth: address, TCP: Use address + port instead, USB: deviceId)
+   * @param {string} [data.address] - If type is "tcp" then the IP Address of the printer
+   * @param {number} [data.port] - If type is "tcp" then the Port of the printer
+   * @param {function} successCallback - Result on success
+   * @param {function} errorCallback - Result on failure
+   */
   getEncoding: function(data, successCallback, errorCallback) {
     cordova.exec(successCallback, errorCallback, 'ThermalPrinter', 'getEncoding', [data]);
   },
